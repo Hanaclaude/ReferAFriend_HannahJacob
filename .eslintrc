@@ -1,0 +1,6 @@
+{
+    "plugins": ["cypress"],
+    "ignorePatterns": ["cypress.config.js", "cypress/support/*.js"],
+    "extends": ["eslint:recommended", "plugin:cypress/recommended"],
+    "rules": {}
+}

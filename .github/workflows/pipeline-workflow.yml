@@ -1,0 +1,305 @@
+name: MyAmaysim Test Automation exercise pipeline
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+  pull_request:
+  schedule:
+      - cron: "0 14 * * MON"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        run: npm install
+      - name: Lint
+        run: npx eslint
+
+  testLinuxElectron:
+    name: Linux/Electron
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependancies
+        run: npm install
+      - name: Run Cypress tests in Electron
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        run: npx cypress run
+      - name: UploadArtifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ScreenshotsAndVideosLinuxElectron
+          path: |
+            cypress/videos
+            cypress/screenshots
+          if-no-files-found: ignore
+
+  testLinuxChrome:
+    name: Linux/Chrome
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Run Cypress tests in Chrome
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        uses: cypress-io/github-action@v4
+        with:
+          browser: chrome
+          headed: true
+      - name: UploadArtifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ScreenshotsAndVideosLinuxChrome
+          path: |
+            cypress/videos
+            cypress/screenshots
+          if-no-files-found: ignore
+
+  testLinuxChromeHeadless:
+    name: Linux/ChromeHeadless
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Run Cypress tests in Chrome
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        uses: cypress-io/github-action@v4
+        with:
+          browser: chrome
+      - name: UploadArtifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ScreenshotsAndVideosLinuxChromeHeadless
+          path: |
+            cypress/videos
+            cypress/screenshots
+          if-no-files-found: ignore
+
+  testMacElectron:
+    name: Mac/Electron
+    runs-on: macos-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Run Cypress tests in Electron
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        uses: cypress-io/github-action@v4
+      - name: UploadArtifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ScreenshotsAndVideosMacElectron
+          path: |
+            cypress/videos
+            cypress/screenshots
+          if-no-files-found: ignore
+
+  testMacChrome:
+    name: Mac/Chrome
+    runs-on: macos-latest
+    timeout-minutes: 7
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Run Cypress tests in Chrome
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        uses: cypress-io/github-action@v4
+        with:
+          browser: chrome
+          headed: true
+      - name: UploadArtifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ScreenshotsAndVideosMacChrome
+          path: |
+            cypress/videos
+            cypress/screenshots
+          if-no-files-found: ignore
+
+  testMacFirefox:
+    name: Mac/Firefox
+    runs-on: macos-latest
+    timeout-minutes: 7
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Run Cypress tests in Firefox
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        uses: cypress-io/github-action@v4
+        with:
+          browser: firefox
+          headed: true
+      - name: UploadArtifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ScreenshotsAndVideosMacFirefox
+          path: |
+            cypress/videos
+            cypress/screenshots
+          if-no-files-found: ignore
+
+  testWindowsElectron:
+    name: Windows/Electron
+    runs-on: windows-latest
+    timeout-minutes: 7
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Run Cypress tests in Electron
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        uses: cypress-io/github-action@v4
+      - name: UploadArtifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ScreenshotsAndVideosWindowsElectron
+          path: |
+            cypress/videos
+            cypress/screenshots
+          if-no-files-found: ignore
+
+  testWindowsChrome:
+    name: Windows/Chrome
+    runs-on: windows-latest
+    timeout-minutes: 7
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Run Cypress tests in Chrome
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        uses: cypress-io/github-action@v4
+        with:
+          browser: chrome
+          headed: true
+      - name: UploadArtifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ScreenshotsAndVideosWindowsChrome
+          path: |
+            cypress/videos
+            cypress/screenshots
+          if-no-files-found: ignore
+
+  testWindowsFirefox:
+    name: Windows/Firefox
+    runs-on: windows-latest
+    timeout-minutes: 7
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Run Cypress tests in Firefox
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        uses: cypress-io/github-action@v4
+        with:
+          browser: firefox
+          headed: true
+      - name: UploadArtifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ScreenshotsAndVideosWindowsFirefox
+          path: |
+            cypress/videos
+            cypress/screenshots
+          if-no-files-found: ignore
+
+  testWindowsEdge:
+    name: Windows/Edge
+    runs-on: windows-latest
+    timeout-minutes: 7
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Run Cypress tests in Edge
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        uses: cypress-io/github-action@v4
+        with:
+          browser: edge
+          headed: true
+      - name: UploadArtifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ScreenshotsAndVideosWindowsEdge
+          path: |
+            cypress/videos
+            cypress/screenshots
+          if-no-files-found: ignore
