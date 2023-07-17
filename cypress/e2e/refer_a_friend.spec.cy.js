@@ -3,6 +3,7 @@ import homePage from './pageObjects/homePage'
 import loginPage from './pageObjects/loginPage'
 import mobilePlanDetailsPage from './pageObjects/mobilePlanDetailsPage'
 import referAFriendPage from './pageObjects/referAFriend'
+import referAFriendPagev2 from './pageObjects/referAFriendv2'
 
 describe('Mobile Service', () => {
   let user

@@ -11,64 +11,40 @@ class ReferAFriend extends BasePage {
   }
 
   isDisplayed() {
-    cy.get(this.menu)
-      .should('be.visible')
-    cy.get(this.pageTitle)
-      .should('contain', 'refer a friend')
-      .and('be.visible')
+    cy.get(this.menu).should('be.visible')
+    cy.get(this.pageTitle).should('contain', 'refer a friend').and('be.visible')
   }
 
- 
-
   copyReferralLink() {
-    cy.location('pathname')
-      .should('include', '/refer_friends', { timeout: 1000 })
-      .then(() => {
-        cy.get('iframe');
-      });
+    cy.location('pathname').should('include', '/refer_friends', { timeout: 1000 })
 
-    describe('Referral Link Copying', () => {
-      it('should display "Copied!" pop-up message when the referral link is clicked within an iframe', () => {
-        cy.get('iframe').then(($iframe) => {
-          const iframeDoc = $iframe.contents();
-          const iframeBody = iframeDoc.find('body');
-    
-          // Intercept the window.alert method to capture the pop-up message
-          cy.on('window:alert', cy.stub().as('alertStub'));
-    
-          // Interact with elements within the iframe
-          cy.wrap(iframeBody)
-            .find('div#r')
-            .click();
-    
-          // Verify that the "Link Copied" pop-up message is displayed
-          cy.get('@alertStub').should('be.calledWith', 'Copied!');
-        });
-      });
-    });
-    
-    describe('Referral Link Copying', () => {
-      it('should copy the referral link within an iframe', () => {
-        // Switch to the iframe context
-        cy.get('iframe').then(($iframe) => {
-          const iframeDoc = $iframe.contents();
-          const iframeBody = iframeDoc.find('body');
-    
-          // Interact with elements within the iframe
-          iframeBody.find('div#s').click();
-    
-          // Assert that the referral link has been copied to the clipboard
-          cy.window().then((win) => {
-            cy.stub(win.navigator.clipboard, 'writeText').as('copyTextStub');
-          });
-    
-          // Verify that the copyText function is called with the referral link
-          cy.get('@copyTextStub').should('be.calledWith', 'Referral Link');
-        });
-      });
-    });
+    // Switch to the iframe context
+    cy.get('iframe').then(($iframe) => {
+      cy.wrap($iframe.contents().find('body'))
+        .find(this.referralLink)
+        .click()
 
+      // Verify that the "Copied!" pop-up message is displayed
+      cy.on('window:alert', (alertText) => {
+        expect(alertText).to.equal('Copied!')
+      })
+    })
+  }
 
+  copyButtonClicked() {
+    cy.location('pathname').should('include', '/refer_friends', { timeout: 1000 })
+
+    // Switch to the iframe context
+    cy.get('iframe').then(($iframe) => {
+      cy.wrap($iframe.contents().find('body'))
+        .find(this.copyButton)
+        .click()
+
+      // Verify that the "Copied!" pop-up message is displayed
+      cy.on('window:alert', (alertText) => {
+        expect(alertText).to.equal('Copied!')
+      })
+    })
   }
 }
 
